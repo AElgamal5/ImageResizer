@@ -32,16 +32,28 @@ function loadImage(e) {
 function sendImage(e) {
   e.preventDefault();
 
+  const width = widthInput.value;
+  const height = heightInput.value;
+  const imagePath = img.files[0].path;
+
   if (!img.files[0]) {
     showError("Upload image first!");
     return;
   }
 
-  if (widthInput.value === "" || heightInput.value === "") {
+  if (width === "" || height === "") {
     showError("Enter width and height first!");
     return;
   }
+
+  //sending using ipcRenderer
+  ipcRenderer.send("imageResize", { imagePath, height, width });
 }
+
+//on imageResizeDone
+ipcRenderer.on("imageResizeDone", () => {
+  showSuccess("Image Resized successfully");
+});
 
 function isImage(file) {
   const acceptedImageTypes = ["image/gif", "image/png", "image/jpeg"];
